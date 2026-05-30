@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 30 20% 97%;
+        --foreground: 240 3% 11%;
+        --card: 0 0% 100%;
+        --card-foreground: 240 3% 11%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 240 3% 11%;
+        --primary: 337 82% 50%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 33 38% 93%;
+        --secondary-foreground: 240 3% 11%;
+        --muted: 33 25% 94%;
+        --muted-foreground: 240 2% 44%;
+        --accent: 335 79% 96%;
+        --accent-foreground: 335 82% 39%;
+        --destructive: 0 66% 47%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 30 16% 91%;
+        --input: 30 13% 82%;
+        --ring: 337 82% 50%;
+        --chart-1: 337 82% 50%;
+        --chart-2: 28 36% 64%;
+        --chart-3: 327 50% 20%;
+        --chart-4: 43 40% 60%;
+        --chart-5: 280 30% 45%;
+        --radius: 0.75rem;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+        margin: 0;
+        font-family: 'DM Sans', system-ui, sans-serif;
+        background: #FAF8F6;
+        color: #1C1C1E;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    ::selection { background: #E8196A; color: #fff; }
+}
+
+/* ---------- Layout ---------- */
+.container-fyn { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+@media (max-width: 768px) { .container-fyn { padding: 0 16px; } }
+
+.font-display { font-family: 'Cormorant Garamond', Georgia, serif; }
+.font-body { font-family: 'DM Sans', system-ui, sans-serif; }
+.font-arabic { font-family: 'Amiri', serif; }
+
+.label-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 500;
+}
+
+/* ---------- Buttons ---------- */
+.btn-fyn-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: #E8196A; color: #fff; border-radius: 999px;
+    height: 48px; padding: 0 32px; font-family: 'DM Sans'; font-weight: 500; font-size: 15px;
+    border: none; cursor: pointer;
+    transition: background var(--dur-mid,300ms) ease, transform 150ms var(--ease,cubic-bezier(0.16,1,0.3,1)), box-shadow 300ms ease;
+}
+.btn-fyn-primary:hover { background: #B5124F; transform: scale(1.02); box-shadow: 0 10px 30px rgba(232,25,106,0.25); }
+.btn-fyn-primary:active { transform: scale(0.97); }
+.btn-fyn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn-fyn-secondary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: transparent; color: #E8196A; border: 1.5px solid #E8196A; border-radius: 999px;
+    height: 48px; padding: 0 32px; font-family: 'DM Sans'; font-weight: 500; font-size: 15px; cursor: pointer;
+    transition: background 300ms ease, transform 150ms ease;
+}
+.btn-fyn-secondary:hover { background: #FDEEF5; transform: scale(1.02); }
+.btn-fyn-secondary:active { transform: scale(0.97); }
+
+.btn-fyn-ghost {
+    display: inline-flex; align-items: center; gap: 6px; background: none; border: none;
+    color: #1C1C1E; font-family: 'DM Sans'; font-weight: 500; font-size: 15px; cursor: pointer;
+    transition: color 200ms ease;
+}
+.btn-fyn-ghost:hover { color: #E8196A; text-decoration: underline; text-underline-offset: 4px; }
+
+/* ---------- Reveal animations ---------- */
+.reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+.reveal.revealed { opacity: 1; transform: translateY(0); }
+
+/* ---------- Product card ---------- */
+.product-card {
+    background: #fff; border-radius: 24px; overflow: hidden; display: block; position: relative;
+    transition: transform 300ms cubic-bezier(0.16,1,0.3,1), box-shadow 300ms ease;
+}
+.product-card:hover { transform: translateY(-8px); box-shadow: 0 24px 60px rgba(0,0,0,0.10); }
+.product-card .card-image-wrapper { overflow: hidden; position: relative; background: #F5EDE3; }
+.product-card .card-image { transition: transform 600ms cubic-bezier(0.16,1,0.3,1); width: 100%; height: 100%; object-fit: cover; display: block; }
+.product-card:hover .card-image { transform: scale(1.08); }
+.product-card .quick-add { transform: translateY(120%); transition: transform 300ms cubic-bezier(0.16,1,0.3,1); }
+.product-card:hover .quick-add { transform: translateY(0); }
+
+/* ---------- Hero ---------- */
+.hero-radial {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(60% 60% at 80% 15%, rgba(232,25,106,0.16) 0%, rgba(201,160,122,0.08) 35%, transparent 70%);
+}
+.hero-product-img { animation: float 6s ease-in-out infinite; }
+
+/* ---------- Checkmark draw ---------- */
+@keyframes draw-circle { to { stroke-dashoffset: 0; } }
+@keyframes draw-check { to { stroke-dashoffset: 0; } }
+.check-circle { stroke-dasharray: 320; stroke-dashoffset: 320; animation: draw-circle 0.8s cubic-bezier(0.16,1,0.3,1) forwards; }
+.check-mark { stroke-dasharray: 80; stroke-dashoffset: 80; animation: draw-check 0.5s cubic-bezier(0.16,1,0.3,1) 0.6s forwards; }
+
+/* ---------- Nav underline ---------- */
+.nav-link { position: relative; }
+.nav-link::after {
+    content: ''; position: absolute; left: 0; bottom: -4px; height: 1.5px; width: 100%;
+    background: #E8196A; transform: scaleX(0); transform-origin: left; transition: transform 300ms cubic-bezier(0.16,1,0.3,1);
+}
+.nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); }
+
+/* ---------- Skip link ---------- */
+.skip-link { position: absolute; top: -100%; left: 1rem; z-index: 9999; background: #E8196A; color: #fff; padding: 0.5rem 1rem; border-radius: 12px; font-weight: 500; }
+.skip-link:focus { top: 1rem; }
+
+/* Hide scrollbar for horizontal scroll rows */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    .reveal { opacity: 1; transform: none; }
+}

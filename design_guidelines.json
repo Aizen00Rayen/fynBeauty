@@ -1,0 +1,218 @@
+{
+  "theme": "LIGHT (with specific Dark Plum sections)",
+  "archetype": "5 (Luxury)",
+  "aesthetic_direction": "Editorial Luxury meets Maghrebi Opulence (Glossier × Charlotte Tilbury × a desert rose)",
+  "brand_name": "Fyn Beauty",
+  "currency_format": {
+    "currency": "DZD",
+    "format": "12 500 DZD (French spacing)",
+    "description": "Algerian Dinar, spaced format."
+  },
+  "colors": {
+    "brand": {
+      "pink": "#E8196A",
+      "pink-light": "#FDEEF5",
+      "pink-dark": "#B5124F",
+      "gold": "#C9A07A",
+      "gold-light": "#F5EDE3",
+      "plum": "#2D0A1F",
+      "plum-mid": "#5C2040"
+    },
+    "surface": {
+      "bg": "#FAF8F6",
+      "surface": "#FFFFFF"
+    },
+    "text": {
+      "default": "#1C1C1E",
+      "muted": "#6E6E73"
+    },
+    "border": {
+      "default": "#EDE8E3",
+      "strong": "#D4C9BF"
+    },
+    "status": {
+      "success": "#2E7D32",
+      "error": "#C62828",
+      "warning": "#E65100"
+    }
+  },
+  "typography": {
+    "fonts": {
+      "heading": "'Cormorant Garamond', serif",
+      "body": "'DM Sans', sans-serif",
+      "arabic": "'Amiri', serif"
+    },
+    "scales": {
+      "hero_title": {
+        "size": "clamp(5rem, 8vw, 7.5rem)",
+        "fontFamily": "'Cormorant Garamond', serif",
+        "weight": "300",
+        "style": "italic",
+        "letterSpacing": "-0.02em",
+        "lineHeight": "1.1"
+      },
+      "section_heading": {
+        "size": "clamp(2.5rem, 5vw, 3.75rem)",
+        "fontFamily": "'Cormorant Garamond', serif",
+        "weight": "400",
+        "lineHeight": "1.2"
+      },
+      "product_name": {
+        "size": "22px",
+        "fontFamily": "'Cormorant Garamond', serif",
+        "weight": "500"
+      },
+      "body": {
+        "size": "15px",
+        "fontFamily": "'DM Sans', sans-serif",
+        "weight": "400"
+      },
+      "price": {
+        "size": "18px",
+        "fontFamily": "'DM Sans', sans-serif",
+        "weight": "500",
+        "color": "#E8196A"
+      },
+      "label": {
+        "size": "11px",
+        "textTransform": "uppercase",
+        "letterSpacing": "0.12em",
+        "fontFamily": "'DM Sans', sans-serif"
+      }
+    }
+  },
+  "spacing_and_radius": {
+    "radius": {
+      "sm": "6px",
+      "md": "12px",
+      "lg": "20px",
+      "xl": "32px",
+      "pill": "999px"
+    },
+    "container_padding": {
+      "default": "2rem",
+      "lg": "4rem"
+    }
+  },
+  "shadows": {
+    "card_hover": "0 20px 60px rgba(0,0,0,0.10)"
+  },
+  "animations": {
+    "page_load": "staggered fade+slide-up (80px to 0, 600ms ease-out-expo cubic-bezier(0.16,1,0.3,1))",
+    "hover_scale": "scale(1.02)",
+    "button_press": "scale(0.97)",
+    "image_zoom": "scale(1.08) on hover",
+    "scroll_reveal": "IntersectionObserver stagger 80ms",
+    "particles": "floating hero particles/sparkles",
+    "accessibility": "respect prefers-reduced-motion"
+  },
+  "components": {
+    "button": {
+      "primary": {
+        "bg": "#E8196A",
+        "text": "#FFFFFF",
+        "radius": "999px",
+        "height": "48px",
+        "paddingX": "32px",
+        "hover": {
+          "bg": "#B5124F",
+          "transform": "scale(1.02)"
+        },
+        "active": {
+          "transform": "scale(0.97)"
+        }
+      },
+      "secondary": {
+        "bg": "transparent",
+        "border": "1.5px solid #E8196A",
+        "text": "#E8196A",
+        "radius": "999px",
+        "height": "48px"
+      },
+      "ghost": {
+        "border": "none",
+        "hover": {
+          "textDecoration": "underline"
+        }
+      },
+      "icon": {
+        "minWidth": "44px",
+        "minHeight": "44px"
+      }
+    },
+    "card": {
+      "product": {
+        "bg": "#FFFFFF",
+        "radius": "32px",
+        "initial_shadow": "none",
+        "hover": {
+          "shadow": "0 20px 60px rgba(0,0,0,0.10)",
+          "transform": "translateY(-8px)",
+          "image_transform": "scale(1.08)"
+        },
+        "quick_add": "slides up from bottom on hover"
+      }
+    },
+    "input": {
+      "height": "52px",
+      "border": "1.5px solid #D4C9BF",
+      "radius": "12px",
+      "focus": {
+        "border": "2px solid #E8196A"
+      },
+      "label": {
+        "size": "12px",
+        "textTransform": "uppercase"
+      }
+    },
+    "logo": {
+      "rules": "Logo always on white/light container, never inverted. Fyn wordmark in dark charcoal with a hot-pink accent bar on the capital F."
+    }
+  },
+  "media": {
+    "hero_product": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/54279db8-9818-4797-82bd-9a0094a1bd56/images/7b447bcc57c0aab331eb79c067f5cfca440353b0067bf96e1ccc464d303ce0f2.png",
+      "description": "Floating high-end luxury lipstick in a sleek charcoal and rose-gold tube on a warm off-white background with a subtle rose radial bloom"
+    },
+    "backgrounds": {
+      "rosegold_texture": "https://static.prod-images.emergentagent.com/jobs/54279db8-9818-4797-82bd-9a0094a1bd56/images/7183a9a243f92463918754f7cb26004721fab024852814eabdaf44446a0b2785.png",
+      "description": "Abstract warm rose gold fluid silk texture"
+    },
+    "product_shots": [
+      {
+        "url": "https://images.unsplash.com/photo-1631730486572-226d1f595b68?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzR8MHwxfHNlYXJjaHwzfHxsdXh1cnklMjBjb3NtZXRpYyUyMHByb2R1Y3RzfGVufDB8fHx8MTc4MDE1MDczNnww&ixlib=rb-4.1.0&q=85",
+        "description": "Makeup products on pink background"
+      },
+      {
+        "url": "https://static.prod-images.emergentagent.com/jobs/54279db8-9818-4797-82bd-9a0094a1bd56/images/067cbc57071b6b5d567fd2f006a443536e8013e39cda7d921fd8c8aa74753bf8.png",
+        "description": "Minimalist flatlay of luxury cosmetics on warm off-white stone"
+      }
+    ],
+    "editorial_lifestyle": [
+      {
+        "url": "https://images.unsplash.com/photo-1596205521983-9c372fb3d4f1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxlZGl0b3JpYWwlMjBiZWF1dHklMjBtYWtldXB8ZW58MHx8fHwxNzgwMTUwNzM2fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Editorial beauty portrait"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1592574083647-6d7c37d81535?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwzfHxlZGl0b3JpYWwlMjBiZWF1dHklMjBtYWtldXB8ZW58MHx8fHwxNzgwMTUwNzM2fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Editorial beauty with pink lipstick"
+      }
+    ]
+  },
+  "data_testid_rules": {
+    "requirement": "All interactive and key informational elements MUST include a data-testid attribute.",
+    "format": "kebab-case, role-based",
+    "examples": [
+      "add-to-cart-button",
+      "shade-selector-dropdown",
+      "checkout-submit-button",
+      "favorite-toggle-button"
+    ]
+  },
+  "instructions_to_main_agent": {
+    "tailwind_setup": "Map the exact color tokens provided above into tailwind.config.js extend.colors object. Map the specific radiuses (sm, md, lg, xl, pill) into extend.borderRadius.",
+    "fonts": "Import 'Cormorant Garamond' (300, 400, 500, italic), 'DM Sans' (400, 500), and 'Amiri' from Google Fonts. Apply them globally using Tailwind utility classes as defined in the typography section.",
+    "components": "Override shadcn/ui defaults to match these exact specifications. Buttons MUST be pill shaped (999px) and 48px height. Inputs MUST be 52px height with 1.5px border. Cards MUST have radius-xl (32px) and no initial shadow.",
+    "animations": "Implement staggered framer-motion animations (fade and slide-up) on page load. Use the precise cubic-bezier(0.16,1,0.3,1) specified. Add floating sparkles/particles to the hero section."
+  }
+}

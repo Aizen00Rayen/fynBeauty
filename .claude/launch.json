@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "fyn-frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start", "--prefix", "C:\\Users\\HP\\Desktop\\fynBeauty-main\\frontend"],
+      "port": 3000
+    }
+  ]
+}

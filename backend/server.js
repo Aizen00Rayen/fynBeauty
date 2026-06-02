@@ -36,6 +36,7 @@ const UPLOAD_DIR = path.join(__dirname, "uploads");
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 app.use("/api/uploads", express.static(UPLOAD_DIR));
 
+app.get("/", (req, res) => res.redirect("/api/"));
 app.get("/api/", (req, res) => {
   res.json({ message: "Fyn Beauty API", status: "ok" });
 });

@@ -9,7 +9,10 @@
 /coverage
 
 # production
-/build
+# NOTE: frontend/build is intentionally committed (not ignored) so the compiled
+# storefront ships with the repo. Hostinger's Node.js hosting has no build step,
+# so the backend serves this prebuilt bundle. Rebuild with `npm run build` after
+# frontend changes and commit the result.
 
 # misc
 .DS_Store

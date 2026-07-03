@@ -104,18 +104,41 @@ app.use("/api/coupons", couponRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/wilayas", wilayaRoutes);
 
-// Single-app deployment on Hostinger: if a frontend build is sitting next to
-// the backend, serve it (and let its index.html handle client-side routing).
-// Otherwise this is an API-only deployment, so send "/" to the API info route
-// instead of a 404.
-const FRONTEND_BUILD = path.join(__dirname, "..", "frontend", "build");
-if (fs.existsSync(FRONTEND_BUILD)) {
+// Single-app deployment: serve the compiled React app if we can find it.
+// Hosting layouts vary (whole repo vs. just backend/ as the app root, build
+// copied next to server.js, etc.), so check every common location and use the
+// first that actually contains an index.html. An explicit FRONTEND_BUILD_DIR
+// env var always wins if set.
+const FRONTEND_BUILD_CANDIDATES = [
+  process.env.FRONTEND_BUILD_DIR,
+  path.join(__dirname, "..", "frontend", "build"), // repo layout: backend/ and frontend/ are siblings
+  path.join(__dirname, "frontend", "build"), // frontend nested inside the backend/app root
+  path.join(__dirname, "build"), // build copied next to server.js
+  path.join(__dirname, "public"), // build copied to backend/public
+  path.join(process.cwd(), "frontend", "build"), // relative to the process working directory
+  path.join(process.cwd(), "build"),
+].filter(Boolean);
+
+const FRONTEND_BUILD = FRONTEND_BUILD_CANDIDATES.find((dir) =>
+  fs.existsSync(path.join(dir, "index.html"))
+);
+
+if (FRONTEND_BUILD) {
+  console.log(`[boot] Serving frontend build from: ${FRONTEND_BUILD}`);
   app.use(express.static(FRONTEND_BUILD));
   app.get("*", (req, res, next) => {
     if (req.path.startsWith("/api/")) return next();
     res.sendFile(path.join(FRONTEND_BUILD, "index.html"));
   });
 } else {
+  // API-only: no build found anywhere. Log where we looked so the layout can be
+  // diagnosed from the host's application logs, and send "/" to the API info
+  // route instead of a 404.
+  console.warn(
+    "[boot] No frontend build found. Serving API only. " +
+    `__dirname=${__dirname} cwd=${process.cwd()} ` +
+    `checked=[${FRONTEND_BUILD_CANDIDATES.join(" | ")}]`
+  );
   app.get("/", (req, res) => res.redirect("/api/"));
 }
 

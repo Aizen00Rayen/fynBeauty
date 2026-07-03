@@ -4,6 +4,9 @@ const path = require("path");
 const fs = require("fs");
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const morgan = require("morgan");
+const rateLimit = require("express-rate-limit");
 
 const { initSchema } = require("./config/schema");
 const { seedData } = require("./seed");
@@ -17,8 +20,48 @@ const { router: couponRoutes } = require("./routes/coupons");
 const adminRoutes = require("./routes/admin");
 const wilayaRoutes = require("./routes/wilayas");
 
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
+
+// Fail fast rather than run with a missing/weak secret in production.
+if (IS_PRODUCTION) {
+  if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+    console.error("[boot] JWT_SECRET must be set to a random string of at least 32 characters in production.");
+    process.exit(1);
+  }
+  if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD === "adminoussamafyn2026") {
+    console.warn(
+      "[boot] WARNING: ADMIN_PASSWORD is unset or still the published default. " +
+      "Set a unique ADMIN_PASSWORD before going live — the default is public in the project README."
+    );
+  }
+  if (!process.env.CORS_ORIGINS || process.env.CORS_ORIGINS.trim() === "*") {
+    console.warn(
+      "[boot] WARNING: CORS_ORIGINS is unset or '*' in production. Set it to your real domain(s)."
+    );
+  }
+}
+
 const app = express();
 app.disable("x-powered-by");
+
+// Hostinger (and most PaaS hosts) sit behind a reverse proxy — trust the first
+// hop so req.ip / X-Forwarded-For are honored correctly (needed for rate limiting).
+app.set("trust proxy", 1);
+
+// Security headers. CSP and COEP are left off: the storefront loads product
+// imagery from external URLs (Unsplash, admin-provided image URLs) and a
+// strict default-src would silently break those without per-deployment
+// tuning. The remaining headers (nosniff, frameguard, HSTS, referrer-policy,
+// etc.) still apply.
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
+  })
+);
+
+app.use(morgan(IS_PRODUCTION ? "combined" : "dev"));
 
 // CORS. Auth uses Bearer tokens (not cookies), so credentials are not required.
 const corsOrigins = (process.env.CORS_ORIGINS || "*").split(",").map((s) => s.trim());
@@ -30,6 +73,19 @@ app.use(
 );
 
 app.use(express.json({ limit: "2mb" }));
+
+// Baseline abuse protection across the whole API. Individual sensitive routes
+// (auth, coupons, orders) layer tighter limits on top of this.
+app.use(
+  "/api",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 600,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { detail: "Trop de requêtes. Réessayez plus tard." },
+  })
+);
 
 // Static uploads (served under /api so a single ingress can route to the backend).
 const UPLOAD_DIR = path.join(__dirname, "uploads");

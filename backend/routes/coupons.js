@@ -1,17 +1,18 @@
 const express = require("express");
+const rateLimit = require("express-rate-limit");
 
-const { pool } = require("../config/db");
+const { db } = require("../config/db");
 const { HttpError, asyncHandler } = require("../utils/http");
 const { publicCoupon } = require("../utils/models");
 
 const router = express.Router();
 
-// Validates a coupon against an order amount. Returns { coupon, discount }
-// or throws an HttpError. Shared with the orders route.
-async function evaluateCoupon(code, orderAmount) {
+// Validates a coupon against an order amount. Synchronous (direct better-sqlite3
+// calls) so it can also run inside the synchronous order-creation transaction
+// in routes/orders.js. Returns { coupon, discount } or throws an HttpError.
+function evaluateCouponSync(code, orderAmount) {
   const normalized = String(code || "").toUpperCase().trim();
-  const [rows] = await pool.query("SELECT * FROM coupons WHERE code = ? LIMIT 1", [normalized]);
-  const coupon = rows[0];
+  const coupon = db.prepare("SELECT * FROM coupons WHERE code = ? LIMIT 1").get(normalized);
   if (!coupon || !coupon.is_active) {
     throw new HttpError(400, "Code promo invalide ou expiré");
   }
@@ -42,8 +43,23 @@ async function evaluateCoupon(code, orderAmount) {
   return { coupon, discount };
 }
 
+async function evaluateCoupon(code, orderAmount) {
+  return evaluateCouponSync(code, orderAmount);
+}
+
+// Coupon codes are short and guessable — rate-limit validation attempts so
+// they can't be brute-forced.
+const validateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { detail: "Trop de tentatives. Réessayez plus tard." },
+});
+
 router.post(
   "/validate",
+  validateLimiter,
   asyncHandler(async (req, res) => {
     const body = req.body || {};
     const { coupon, discount } = await evaluateCoupon(body.code, Number(body.orderAmount || 0));
@@ -58,4 +74,4 @@ router.post(
   })
 );
 
-module.exports = { router, evaluateCoupon };
+module.exports = { router, evaluateCoupon, evaluateCouponSync };

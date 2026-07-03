@@ -1,4 +1,5 @@
 const express = require("express");
+const rateLimit = require("express-rate-limit");
 const { v4: uuidv4 } = require("uuid");
 
 const { pool } = require("../config/db");
@@ -10,9 +11,22 @@ const { publicUser } = require("../utils/models");
 const router = express.Router();
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 8;
+
+// Slows down credential stuffing / brute-force attempts against login and
+// account-creation spam against register. Keyed by IP (default), so this
+// doesn't rely on the (spoofable) submitted email.
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { detail: "Trop de tentatives. Réessayez dans quelques minutes." },
+});
 
 router.post(
   "/register",
+  authLimiter,
   asyncHandler(async (req, res) => {
     const body = req.body || {};
     const email = String(body.email || "").toLowerCase().trim();
@@ -21,7 +35,9 @@ router.post(
     const phone = body.phone ? String(body.phone) : null;
 
     if (!EMAIL_RE.test(email)) throw new HttpError(400, "Email invalide");
-    if (password.length < 6) throw new HttpError(400, "Mot de passe trop court (min 6)");
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      throw new HttpError(400, `Mot de passe trop court (min ${MIN_PASSWORD_LENGTH})`);
+    }
     if (fullName.length < 2) throw new HttpError(400, "Nom complet requis");
 
     const [existing] = await pool.query("SELECT id FROM users WHERE email = ? LIMIT 1", [email]);
@@ -50,6 +66,7 @@ router.post(
 
 router.post(
   "/login",
+  authLimiter,
   asyncHandler(async (req, res) => {
     const body = req.body || {};
     const email = String(body.email || "").toLowerCase().trim();
@@ -106,7 +123,9 @@ router.put(
     const body = req.body || {};
     const oldPassword = String(body.old_password || "");
     const newPassword = String(body.new_password || "");
-    if (newPassword.length < 6) throw new HttpError(400, "Nouveau mot de passe trop court (min 6)");
+    if (newPassword.length < MIN_PASSWORD_LENGTH) {
+      throw new HttpError(400, `Nouveau mot de passe trop court (min ${MIN_PASSWORD_LENGTH})`);
+    }
 
     const [rows] = await pool.query("SELECT * FROM users WHERE id = ? LIMIT 1", [req.user.id]);
     const full = rows[0];

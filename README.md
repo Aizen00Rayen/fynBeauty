@@ -59,10 +59,13 @@ npm start                   # ouvre http://localhost:3000
    - **Fichier de démarrage :** `server.js`
    - **Version de Node :** 18 ou supérieure
 3. Renseignez les variables d'environnement (équivalent du `.env`) :
-   `JWT_SECRET` (chaîne longue et aléatoire), `ADMIN_EMAIL`, `ADMIN_PASSWORD`,
-   `CORS_ORIGINS=https://votre-domaine`. `DB_PATH` est optionnel (par défaut
-   `backend/data/fynbeauty.sqlite`) — assurez-vous simplement que le dossier
-   `data/` persiste entre les déploiements (c'est là que vivent vos données).
+   `NODE_ENV=production`, `JWT_SECRET` (chaîne aléatoire d'au moins 32
+   caractères — le serveur refuse de démarrer en production sans ça),
+   `ADMIN_EMAIL`, `ADMIN_PASSWORD` (changez la valeur par défaut, elle est
+   publiée dans ce README), `CORS_ORIGINS=https://votre-domaine`. `DB_PATH`
+   est optionnel (par défaut `backend/data/fynbeauty.sqlite`) — assurez-vous
+   simplement que le dossier `data/` persiste entre les déploiements (c'est
+   là que vivent vos données).
 4. Lancez `npm install` puis démarrez l'application.
 
 > `better-sqlite3` contient un module natif compilé au moment de `npm install`.
@@ -86,9 +89,35 @@ l'URL de l'API, lancez `npm run build`, et déposez `frontend/build/` dans
 
 ---
 
-## Notes de sécurité
-- `JWT_SECRET` **doit** être défini en production (chaîne longue et aléatoire).
+## Sécurité
+
+Mesures déjà en place dans le backend :
+- Mots de passe hachés avec bcrypt (12 rounds) ; longueur minimale de 8 caractères.
+- JWT signés HS256, algorithme forcé à la vérification (pas de faille "alg=none").
+- Toutes les requêtes SQL sont paramétrées (aucune concaténation de valeurs utilisateur).
+- En-têtes de sécurité HTTP via `helmet` (nosniff, HSTS, frameguard, etc.).
+- Limitation de débit (`express-rate-limit`) sur la connexion/l'inscription
+  (10/15 min), la validation de coupon (30/15 min), la création de commande
+  (20/heure) et l'ensemble de l'API (600/15 min) — protège contre le
+  brute-force et les abus.
+- Upload d'images admin : le type de fichier est vérifié sur les octets
+  réels (signature), pas seulement sur l'en-tête `Content-Type` envoyé par
+  le client.
+- Commande : agrégation des lignes de panier par produit et vérification du
+  stock dans une transaction SQLite atomique (empêche la survente).
+- Le serveur refuse de démarrer en production sans `JWT_SECRET` valide, et
+  avertit au démarrage si `CORS_ORIGINS` ou `ADMIN_PASSWORD` sont laissés
+  aux valeurs par défaut.
+
+À votre charge avant la mise en ligne :
+- `JWT_SECRET` **doit** être défini en production (chaîne longue et aléatoire, ≥32 caractères).
+- Changez `ADMIN_PASSWORD` — la valeur par défaut de ce README est publique.
 - Renseignez `CORS_ORIGINS` avec votre domaine réel (évitez `*` en production).
 - Le paiement se fait à la livraison (cash on delivery) — aucune donnée bancaire stockée.
 - Sauvegardez régulièrement le fichier `backend/data/fynbeauty.sqlite` (c'est
   toute votre base de données).
+- Le frontend garde le jeton de connexion dans `localStorage` (comme la
+  plupart des SPA React). Le code ne comporte aucun point d'injection HTML
+  connu (pas de `dangerouslySetInnerHTML`), mais si vous ajoutez un jour du
+  contenu utilisateur affiché tel quel (avis clients, etc.), assurez-vous
+  qu'il reste échappé par React et n'est jamais inséré via `innerHTML`.

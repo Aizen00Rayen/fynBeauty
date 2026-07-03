@@ -92,18 +92,6 @@ const UPLOAD_DIR = path.join(__dirname, "uploads");
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 app.use("/api/uploads", express.static(UPLOAD_DIR));
 
-app.get("/api/", (req, res) => {
-  res.json({ message: "Fyn Beauty API", status: "ok" });
-});
-
-app.use("/api/auth", authRoutes);
-app.use("/api", productRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/coupons", couponRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/wilayas", wilayaRoutes);
-
 // Single-app deployment: serve the compiled React app if we can find it.
 // Hosting layouts vary (whole repo vs. just backend/ as the app root, build
 // copied next to server.js, etc.), so check every common location and use the
@@ -122,6 +110,34 @@ const FRONTEND_BUILD_CANDIDATES = [
 const FRONTEND_BUILD = FRONTEND_BUILD_CANDIDATES.find((dir) =>
   fs.existsSync(path.join(dir, "index.html"))
 );
+
+app.get("/api/", (req, res) => {
+  res.json({ message: "Fyn Beauty API", status: "ok" });
+});
+
+// Deployment diagnostic: shows whether the frontend build was located and
+// every path that was checked. Handy when the storefront won't serve on a
+// host — visit /api/status and read the result. Safe to remove once live.
+app.get("/api/status", (req, res) => {
+  res.json({
+    frontendBuildServedFrom: FRONTEND_BUILD || null,
+    serving: FRONTEND_BUILD ? "frontend + api" : "api only",
+    dirname: __dirname,
+    cwd: process.cwd(),
+    candidates: FRONTEND_BUILD_CANDIDATES.map((dir) => ({
+      dir,
+      hasIndexHtml: fs.existsSync(path.join(dir, "index.html")),
+    })),
+  });
+});
+
+app.use("/api/auth", authRoutes);
+app.use("/api", productRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/coupons", couponRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/wilayas", wilayaRoutes);
 
 if (FRONTEND_BUILD) {
   console.log(`[boot] Serving frontend build from: ${FRONTEND_BUILD}`);

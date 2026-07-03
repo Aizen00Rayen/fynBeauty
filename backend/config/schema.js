@@ -1,6 +1,6 @@
-const { pool } = require("./db");
+const { db } = require("./db");
 
-// Creates all tables if they do not already exist. Safe to run on every boot.
+// Creates all tables (and indexes) if they do not already exist. Safe to run on every boot.
 const STATEMENTS = [
   `CREATE TABLE IF NOT EXISTS users (
     id VARCHAR(36) NOT NULL PRIMARY KEY,
@@ -11,9 +11,9 @@ const STATEMENTS = [
     role VARCHAR(20) NOT NULL DEFAULT 'customer',
     wilaya VARCHAR(100) NULL,
     address TEXT NULL,
-    created_at VARCHAR(40) NOT NULL,
-    INDEX idx_users_role (role)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+    created_at VARCHAR(40) NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_users_role ON users (role)`,
 
   `CREATE TABLE IF NOT EXISTS categories (
     id VARCHAR(36) NOT NULL PRIMARY KEY,
@@ -22,7 +22,7 @@ const STATEMENTS = [
     description TEXT NULL,
     image_url TEXT NULL,
     sort_order INT NOT NULL DEFAULT 0
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+  )`,
 
   `CREATE TABLE IF NOT EXISTS products (
     id VARCHAR(36) NOT NULL PRIMARY KEY,
@@ -33,21 +33,21 @@ const STATEMENTS = [
     compare_price DECIMAL(12,2) NULL,
     category_slug VARCHAR(255) NULL,
     category_name VARCHAR(255) NULL,
-    images JSON NULL,
+    images TEXT NULL,
     stock INT NOT NULL DEFAULT 0,
     is_active TINYINT(1) NOT NULL DEFAULT 1,
     is_featured TINYINT(1) NOT NULL DEFAULT 0,
-    tags JSON NULL,
-    shades JSON NULL,
+    tags TEXT NULL,
+    shades TEXT NULL,
     sku VARCHAR(64) NULL,
     weight_grams INT NULL,
     sold_count INT NOT NULL DEFAULT 0,
     created_at VARCHAR(40) NOT NULL,
-    updated_at VARCHAR(40) NOT NULL,
-    INDEX idx_products_category (category_slug),
-    INDEX idx_products_active (is_active),
-    INDEX idx_products_featured (is_featured)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+    updated_at VARCHAR(40) NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_products_category ON products (category_slug)`,
+  `CREATE INDEX IF NOT EXISTS idx_products_active ON products (is_active)`,
+  `CREATE INDEX IF NOT EXISTS idx_products_featured ON products (is_featured)`,
 
   `CREATE TABLE IF NOT EXISTS orders (
     id VARCHAR(36) NOT NULL PRIMARY KEY,
@@ -61,6 +61,7 @@ const STATEMENTS = [
     commune VARCHAR(100) NULL,
     address TEXT NULL,
     delivery_notes TEXT NULL,
+    delivery_type VARCHAR(20) NOT NULL DEFAULT 'home',
     subtotal DECIMAL(12,2) NOT NULL DEFAULT 0,
     delivery_fee DECIMAL(12,2) NOT NULL DEFAULT 0,
     discount_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
@@ -68,13 +69,13 @@ const STATEMENTS = [
     coupon_code VARCHAR(64) NULL,
     payment_method VARCHAR(40) NOT NULL DEFAULT 'cash_on_delivery',
     notes TEXT NULL,
-    items JSON NULL,
+    items TEXT NULL,
     created_at VARCHAR(40) NOT NULL,
-    updated_at VARCHAR(40) NOT NULL,
-    INDEX idx_orders_user (user_id),
-    INDEX idx_orders_status (status),
-    INDEX idx_orders_wilaya (wilaya)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+    updated_at VARCHAR(40) NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_orders_user ON orders (user_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_orders_status ON orders (status)`,
+  `CREATE INDEX IF NOT EXISTS idx_orders_wilaya ON orders (wilaya)`,
 
   `CREATE TABLE IF NOT EXISTS coupons (
     id VARCHAR(36) NOT NULL PRIMARY KEY,
@@ -88,14 +89,14 @@ const STATEMENTS = [
     is_active TINYINT(1) NOT NULL DEFAULT 1,
     expires_at VARCHAR(40) NULL,
     created_at VARCHAR(40) NOT NULL
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+  )`,
 
   `CREATE TABLE IF NOT EXISTS favorites (
     user_id VARCHAR(36) NOT NULL,
     product_id VARCHAR(36) NOT NULL,
     created_at VARCHAR(40) NOT NULL,
     PRIMARY KEY (user_id, product_id)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+  )`,
 
   `CREATE TABLE IF NOT EXISTS wilayas (
     code VARCHAR(3) NOT NULL PRIMARY KEY,
@@ -103,20 +104,12 @@ const STATEMENTS = [
     home_price DECIMAL(10,2) NOT NULL DEFAULT 600.00,
     office_price DECIMAL(10,2) NOT NULL DEFAULT 400.00,
     is_active TINYINT(1) NOT NULL DEFAULT 1
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+  )`,
 ];
 
 async function initSchema() {
   for (const sql of STATEMENTS) {
-    await pool.query(sql);
-  }
-  // Add delivery_type to orders if it doesn't exist yet (idempotent migration)
-  try {
-    await pool.query(
-      "ALTER TABLE orders ADD COLUMN delivery_type VARCHAR(20) NOT NULL DEFAULT 'home' AFTER delivery_notes"
-    );
-  } catch (e) {
-    if (e.errno !== 1060) throw e; // 1060 = Duplicate column name (already exists)
+    db.exec(sql);
   }
 }
 

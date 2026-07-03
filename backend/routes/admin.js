@@ -361,7 +361,7 @@ router.get(
     }
     if (search) {
       const like = `%${escapeLike(search)}%`;
-      where.push("(order_number LIKE ? ESCAPE '\\\\' OR customer_name LIKE ? ESCAPE '\\\\' OR customer_phone LIKE ? ESCAPE '\\\\')");
+      where.push("(order_number LIKE ? ESCAPE '\\' OR customer_name LIKE ? ESCAPE '\\' OR customer_phone LIKE ? ESCAPE '\\')");
       params.push(like, like, like);
     }
     const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
@@ -423,7 +423,7 @@ router.get(
     }
     if (search) {
       const like = `%${escapeLike(search)}%`;
-      where.push("(full_name LIKE ? ESCAPE '\\\\' OR email LIKE ? ESCAPE '\\\\')");
+      where.push("(full_name LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\')");
       params.push(like, like);
     }
     const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";

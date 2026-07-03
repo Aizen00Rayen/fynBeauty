@@ -45,7 +45,7 @@ router.post(
     const [rows] = await pool.query("SELECT id FROM products WHERE id = ? LIMIT 1", [productId]);
     if (!rows.length) throw new HttpError(404, "Produit introuvable");
     await pool.query(
-      "INSERT IGNORE INTO favorites (user_id, product_id, created_at) VALUES (?, ?, ?)",
+      "INSERT OR IGNORE INTO favorites (user_id, product_id, created_at) VALUES (?, ?, ?)",
       [req.user.id, productId, nowIso()]
     );
     res.json({ message: "Ajouté aux favoris", product_id: productId });

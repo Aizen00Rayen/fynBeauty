@@ -179,7 +179,7 @@ async function seedData() {
     ];
     for (const [code, name] of WILAYAS) {
       await pool.query(
-        "INSERT IGNORE INTO wilayas (code, name, home_price, office_price, is_active) VALUES (?, ?, 600.00, 400.00, 1)",
+        "INSERT OR IGNORE INTO wilayas (code, name, home_price, office_price, is_active) VALUES (?, ?, 600.00, 400.00, 1)",
         [code, name]
       );
     }

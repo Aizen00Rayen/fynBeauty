@@ -74,7 +74,7 @@ router.get(
       where.push("compare_price IS NOT NULL");
     }
     if (search) {
-      where.push("name LIKE ? ESCAPE '\\\\'");
+      where.push("name LIKE ? ESCAPE '\\'");
       params.push(`%${escapeLike(search)}%`);
     }
     if (min_price !== undefined && min_price !== "") {

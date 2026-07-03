@@ -46,7 +46,7 @@ router.post(
       for (const item of items) {
         const qty = Math.max(1, parseInt(item.quantity, 10) || 1);
         const [rows] = await conn.query(
-          "SELECT * FROM products WHERE id = ? AND is_active = 1 LIMIT 1 FOR UPDATE",
+          "SELECT * FROM products WHERE id = ? AND is_active = 1 LIMIT 1",
           [item.product_id]
         );
         const product = rows[0];

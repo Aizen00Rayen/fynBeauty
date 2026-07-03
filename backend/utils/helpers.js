@@ -30,7 +30,7 @@ function nowIso() {
   return new Date().toISOString();
 }
 
-// Parse a value that may be a JSON string (MariaDB) or already an object (MySQL 8).
+// Parse a JSON column value (stored as TEXT in SQLite).
 function parseJson(value, fallback) {
   if (value === null || value === undefined) return fallback;
   if (typeof value === "object") return value;
@@ -41,7 +41,7 @@ function parseJson(value, fallback) {
   }
 }
 
-// Escape characters that have special meaning inside a MySQL LIKE pattern so
+// Escape characters that have special meaning inside a LIKE pattern so
 // user-supplied search text is treated literally.
 function escapeLike(text) {
   return String(text).replace(/[\\%_]/g, (c) => "\\" + c);

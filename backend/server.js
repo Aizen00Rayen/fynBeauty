@@ -92,7 +92,6 @@ const UPLOAD_DIR = path.join(__dirname, "uploads");
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 app.use("/api/uploads", express.static(UPLOAD_DIR));
 
-app.get("/", (req, res) => res.redirect("/api/"));
 app.get("/api/", (req, res) => {
   res.json({ message: "Fyn Beauty API", status: "ok" });
 });
@@ -105,7 +104,10 @@ app.use("/api/coupons", couponRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/wilayas", wilayaRoutes);
 
-// Optionally serve the built React app (single-app deployment on Hostinger).
+// Single-app deployment on Hostinger: if a frontend build is sitting next to
+// the backend, serve it (and let its index.html handle client-side routing).
+// Otherwise this is an API-only deployment, so send "/" to the API info route
+// instead of a 404.
 const FRONTEND_BUILD = path.join(__dirname, "..", "frontend", "build");
 if (fs.existsSync(FRONTEND_BUILD)) {
   app.use(express.static(FRONTEND_BUILD));
@@ -113,6 +115,8 @@ if (fs.existsSync(FRONTEND_BUILD)) {
     if (req.path.startsWith("/api/")) return next();
     res.sendFile(path.join(FRONTEND_BUILD, "index.html"));
   });
+} else {
+  app.get("/", (req, res) => res.redirect("/api/"));
 }
 
 // Unknown API route -> JSON 404.

@@ -121,11 +121,26 @@ export default function ProductDetail() {
                     onClick={() => setShade(s.name)}
                     title={s.name}
                     aria-label={s.name}
-                    className="rounded-full grid place-items-center transition-transform hover:scale-110"
-                    style={{ width: 42, height: 42, background: s.hex, border: shade === s.name ? "2px solid #1C1C1E" : "2px solid #EDE8E3", outline: shade === s.name ? "2px solid #fff" : "none", outlineOffset: "-4px" }}
+                    className="flex flex-col items-center gap-1.5 transition-transform hover:scale-105"
+                    style={{ width: 76 }}
                     data-testid={`shade-${s.name.replace(/\s/g, "-").toLowerCase()}`}
                   >
-                    {shade === s.name && <Check size={16} color="#fff" style={{ mixBlendMode: "difference" }} />}
+                    <span
+                      className="relative rounded-xl overflow-hidden block"
+                      style={{ width: 68, height: 68, border: shade === s.name ? "2px solid #1C1C1E" : "2px solid #EDE8E3", outline: shade === s.name ? "2px solid #fff" : "none", outlineOffset: "-4px" }}
+                    >
+                      {s.image ? (
+                        <img src={mediaUrl(s.image)} alt={s.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="w-full h-full block" style={{ background: s.hex || "#EDE8E3" }} />
+                      )}
+                      {shade === s.name && (
+                        <span className="absolute inset-0 grid place-items-center bg-black/10">
+                          <Check size={20} color="#fff" style={{ mixBlendMode: "difference" }} />
+                        </span>
+                      )}
+                    </span>
+                    <span className="text-xs text-center text-fyn-muted leading-tight line-clamp-2">{s.name}</span>
                   </button>
                 ))}
               </div>

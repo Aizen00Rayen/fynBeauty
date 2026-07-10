@@ -27,8 +27,10 @@ export default function AdminProducts() {
   const [form, setForm] = useState(empty);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingShade, setUploadingShade] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const fileRef = useRef();
+  const shadeFileRef = useRef();
 
   const load = () => api.get("/admin/products").then((r) => setProducts(r.data));
   useEffect(() => { load(); api.get("/categories").then((r) => setCategories(r.data)); }, []);
@@ -64,6 +66,27 @@ export default function AdminProducts() {
     }
   };
 
+  const handleShadeUpload = async (e) => {
+    const file = e.target.files?.[0];
+    const index = uploadingShade;
+    if (!file || index === null) return;
+    const fd = new FormData();
+    fd.append("file", file);
+    try {
+      const { data } = await api.post("/admin/upload", fd);
+      setForm((f) => {
+        const sh = [...f.shades];
+        sh[index] = { ...sh[index], image: data.url };
+        return { ...f, shades: sh };
+      });
+    } catch (err) {
+      toast.error(apiError(err.response?.data?.detail) || "Échec de l'upload");
+    } finally {
+      setUploadingShade(null);
+      if (shadeFileRef.current) shadeFileRef.current.value = "";
+    }
+  };
+
   const save = async () => {
     if (!form.name || !form.price) { toast.error("Nom et prix requis"); return; }
     setSaving(true);
@@ -73,8 +96,13 @@ export default function AdminProducts() {
       category_slug: form.category_slug || null, stock: parseInt(form.stock || 0),
       sku: form.sku || null, tags: form.tags ? form.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
       is_active: form.is_active, is_featured: form.is_featured, images: form.images,
-      shades: form.shades.map((s) => ({ name: s.name, hex: s.hex, stock: parseInt(s.stock || 0) })),
+      shades: form.shades.map((s) => ({ name: s.name, image: s.image || null, stock: parseInt(s.stock || 0) })),
     };
+    if (payload.shades.some((s) => !s.name || !s.image)) {
+      toast.error("Chaque teinte doit avoir une référence et une photo");
+      setSaving(false);
+      return;
+    }
     try {
       if (editing) await api.put(`/admin/products/${editing.id}`, payload);
       else await api.post("/admin/products", payload);
@@ -166,15 +194,36 @@ export default function AdminProducts() {
             </TabsContent>
 
             <TabsContent value="shades" className="pt-4 space-y-3">
+              <input
+                ref={shadeFileRef}
+                type="file"
+                accept="image/*"
+                onChange={handleShadeUpload}
+                className="hidden"
+                data-testid="shade-image-input"
+              />
+              <p className="text-xs text-fyn-muted -mt-1">Ajoutez une photo du teint appliqué sur un modèle pour chaque référence, afin que la cliente puisse choisir avec précision.</p>
               {form.shades.map((s, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <input type="color" value={s.hex} onChange={(e) => { const sh = [...form.shades]; sh[i] = { ...sh[i], hex: e.target.value }; setForm({ ...form, shades: sh }); }} className="rounded-md border border-fyn-border" style={{ width: 46, height: 46 }} />
-                  <input placeholder="Nom" value={s.name} onChange={(e) => { const sh = [...form.shades]; sh[i] = { ...sh[i], name: e.target.value }; setForm({ ...form, shades: sh }); }} className={inputCls} style={{ height: 46 }} />
+                <div key={i} className="flex items-center gap-3 border border-fyn-border rounded-xl p-2.5">
+                  <button
+                    type="button"
+                    onClick={() => { setUploadingShade(i); shadeFileRef.current?.click(); }}
+                    className="relative rounded-lg overflow-hidden bg-fyn-gold-light shrink-0 grid place-items-center border border-fyn-border"
+                    style={{ width: 56, height: 56 }}
+                  >
+                    {s.image ? (
+                      <img src={mediaUrl(s.image)} alt={s.name || `teinte-${i}`} className="w-full h-full object-cover" />
+                    ) : (
+                      <Upload size={18} className="text-fyn-muted" />
+                    )}
+                    {uploadingShade === i && <span className="absolute inset-0 bg-black/40 grid place-items-center text-white text-[10px]">...</span>}
+                  </button>
+                  <input placeholder="Référence (ex: Teint 03 - Beige doré)" value={s.name} onChange={(e) => { const sh = [...form.shades]; sh[i] = { ...sh[i], name: e.target.value }; setForm({ ...form, shades: sh }); }} className={inputCls} style={{ height: 46 }} />
                   <input type="number" placeholder="Stock" value={s.stock} onChange={(e) => { const sh = [...form.shades]; sh[i] = { ...sh[i], stock: e.target.value }; setForm({ ...form, shades: sh }); }} className={inputCls} style={{ height: 46, width: 90 }} />
                   <button onClick={() => setForm({ ...form, shades: form.shades.filter((_, idx) => idx !== i) })} className="grid place-items-center text-fyn-muted hover:text-fyn-pink" style={{ width: 40, height: 40 }}><Trash2 size={16} /></button>
                 </div>
               ))}
-              <button onClick={() => setForm({ ...form, shades: [...form.shades, { name: "", hex: "#E8196A", stock: 0 }] })} className="btn-fyn-ghost"><Plus size={16} /> Ajouter une teinte</button>
+              <button onClick={() => setForm({ ...form, shades: [...form.shades, { name: "", image: null, stock: 0 }] })} className="btn-fyn-ghost"><Plus size={16} /> Ajouter une teinte</button>
             </TabsContent>
           </Tabs>
           <DialogFooter>

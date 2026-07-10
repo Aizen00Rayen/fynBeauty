@@ -7,11 +7,8 @@ import { mediaUrl } from "../../services/api";
 export default function CartDrawer() {
   const {
     isOpen, closeCart, items, updateQuantity, removeFromCart,
-    subtotal, deliveryFee, discount, total, itemCount, coupon, FREE_DELIVERY_THRESHOLD,
+    subtotal, deliveryFee, discount, total, itemCount, coupon,
   } = useCart();
-
-  const remaining = Math.max(0, FREE_DELIVERY_THRESHOLD - subtotal);
-  const progress = Math.min(100, (subtotal / FREE_DELIVERY_THRESHOLD) * 100);
 
   return (
     <>
@@ -43,17 +40,6 @@ export default function CartDrawer() {
           </div>
         ) : (
           <>
-            <div className="px-6 py-4 bg-fyn-pink-light/60">
-              {remaining > 0 ? (
-                <p className="text-sm text-fyn-text font-body">Plus que <strong className="text-fyn-pink">{formatPrice(remaining)}</strong> pour la livraison gratuite !</p>
-              ) : (
-                <p className="text-sm font-body" style={{ color: "#2E7D32" }}>🎉 Livraison gratuite débloquée !</p>
-              )}
-              <div className="mt-2 h-1.5 rounded-pill bg-white overflow-hidden">
-                <div className="h-full bg-fyn-pink rounded-pill transition-all" style={{ width: `${progress}%` }} />
-              </div>
-            </div>
-
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
               {items.map((item) => (
                 <div key={item.key} className="flex gap-4" data-testid={`cart-item-${item.slug}`}>

@@ -207,7 +207,7 @@ export default function AdminLivraison() {
           <p className="label-eyebrow text-fyn-gold mb-1">Configuration</p>
           <h1 className="font-display text-fyn-text" style={{ fontSize: "2.5rem" }}>Livraison par wilaya</h1>
           <p className="text-fyn-muted text-sm mt-1">
-            Prix de livraison à domicile et au bureau pour chaque wilaya. Livraison gratuite automatique dès {formatPrice(8000)}.
+            Prix de livraison à domicile et au bureau pour chaque wilaya.
           </p>
         </div>
         <button

@@ -220,7 +220,7 @@ export default function Home() {
               {[
                 { icon: HomeIcon, title: "À domicile", desc: "Reçue directement chez vous, sans vous déplacer" },
                 { icon: Building2, title: "Bureau / Stop Desk", desc: "Récupérez votre colis au bureau le plus proche" },
-                { icon: Banknote, title: "Paiement à la livraison", desc: "Gratuite dès 8 000 DZD d'achat" },
+                { icon: Banknote, title: "Paiement à la livraison", desc: "Payez en espèces à la réception de votre colis" },
               ].map(({ icon: Icon, title, desc }) => (
                 <div key={title} className="flex items-start gap-3 rounded-2xl px-4 py-3.5" style={{ background: "rgba(255,255,255,0.07)", backdropFilter: "blur(8px)" }}>
                   <div className="grid place-items-center rounded-xl shrink-0" style={{ width: 38, height: 38, background: "rgba(232,25,106,0.25)" }}>

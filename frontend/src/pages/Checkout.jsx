@@ -12,7 +12,6 @@ import {
 } from "../components/ui/select";
 
 const inputCls = "w-full bg-white border-[1.5px] border-fyn-border-strong rounded-md px-4 outline-none focus:border-fyn-pink focus:border-2 transition-colors";
-const FREE_THRESHOLD = 8000;
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -56,11 +55,6 @@ export default function Checkout() {
 
   // Recompute fee whenever wilaya or delivery type changes
   useEffect(() => {
-    if (subtotal >= FREE_THRESHOLD) {
-      setDeliveryFee(0);
-      updateWilayaFee(0);
-      return;
-    }
     if (!form.wilaya) {
       setDeliveryFee(null);
       updateWilayaFee(null);
@@ -72,7 +66,7 @@ export default function Checkout() {
       : null;
     setDeliveryFee(fee);
     updateWilayaFee(fee);
-  }, [form.wilaya, deliveryType, wilayas, subtotal, updateWilayaFee]);
+  }, [form.wilaya, deliveryType, wilayas, updateWilayaFee]);
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
@@ -187,7 +181,7 @@ export default function Checkout() {
                         </div>
                         <div className="flex-1">
                           <p className="font-display text-fyn-text text-base">{label}</p>
-                          <p className="text-sm text-fyn-muted">{subtotal >= FREE_THRESHOLD ? "Gratuite" : desc}</p>
+                          <p className="text-sm text-fyn-muted">{desc}</p>
                         </div>
                         {deliveryType === value && (
                           <div className="grid place-items-center rounded-full bg-fyn-pink text-white shrink-0" style={{ width: 22, height: 22 }}>

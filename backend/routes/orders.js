@@ -11,8 +11,6 @@ const { evaluateCouponSync } = require("./coupons");
 
 const router = express.Router();
 
-const FREE_DELIVERY_THRESHOLD = 8000;
-
 const MAX_ITEM_QUANTITY = 50; // sanity cap per line — a legit customer order never needs more
 
 // Keeps checkout accessible to guests while still bounding abuse (spam orders /
@@ -99,7 +97,7 @@ function buildOrder({ items, customer, delivery, deliveryType, couponCode: rawCo
   if (wilayaRow) {
     baseDeliveryFee = deliveryType === "office" ? Number(wilayaRow.office_price) : Number(wilayaRow.home_price);
   }
-  const deliveryFee = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : baseDeliveryFee;
+  const deliveryFee = baseDeliveryFee;
   const total = Math.round((subtotal + deliveryFee - discountAmount) * 100) / 100;
 
   const { count } = db.prepare("SELECT COUNT(*) AS count FROM orders").get();

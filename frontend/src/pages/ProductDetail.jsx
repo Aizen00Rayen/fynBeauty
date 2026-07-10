@@ -166,7 +166,7 @@ export default function ProductDetail() {
           </div>
 
           <div className="flex items-center gap-2 mt-5 text-sm text-fyn-muted bg-fyn-gold-light rounded-xl p-4">
-            <Truck size={18} className="text-fyn-gold" /> Livraison 500 DZD · Gratuite dès 8 000 DZD · Paiement à la livraison
+            <Truck size={18} className="text-fyn-gold" /> Livraison selon la wilaya · Paiement à la livraison
           </div>
 
           <Accordion type="single" collapsible className="mt-8" defaultValue="desc">

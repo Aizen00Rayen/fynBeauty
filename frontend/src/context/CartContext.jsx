@@ -4,8 +4,6 @@ const CartContext = createContext(null);
 const STORAGE_KEY = "fyn_cart";
 const COUPON_KEY = "fyn_coupon";
 
-const FREE_DELIVERY_THRESHOLD = 8000;
-
 function itemKey(productId, shade) {
   return `${productId}|${shade || ""}`;
 }
@@ -90,11 +88,8 @@ export function CartProvider({ children }) {
 
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  // null = unknown (no wilaya selected yet); 0 = free; >0 = exact fee
-  const deliveryFee =
-    subtotal >= FREE_DELIVERY_THRESHOLD || subtotal === 0
-      ? 0
-      : wilayaFee; // null until checkout picks a wilaya
+  // null = unknown (no wilaya selected yet); 0 = empty cart; >0 = exact fee
+  const deliveryFee = subtotal === 0 ? 0 : wilayaFee; // null until checkout picks a wilaya
 
   let discount = 0;
   if (coupon && subtotal >= (coupon.minOrder || 0)) {
@@ -127,7 +122,6 @@ export function CartProvider({ children }) {
         discount,
         total,
         bump,
-        FREE_DELIVERY_THRESHOLD,
       }}
     >
       {children}

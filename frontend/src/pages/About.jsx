@@ -8,7 +8,7 @@ const SIDE = "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?crop=
 const VALUES = [
   { icon: ShieldCheck, t: "100% Halal", d: "Des formules certifiées, respectueuses de nos valeurs." },
   { icon: Leaf, t: "Cruelty Free", d: "Jamais testé sur les animaux, toujours sur l'amour." },
-  { icon: Sparkles, t: "Fabriqué en Algérie", d: "Une fierté locale, de Tlemcen à toute l'Algérie." },
+  { icon: Sparkles, t: "Fabriqué en Algérie", d: "Une fierté locale, conçue avec passion en Algérie." },
 ];
 
 export default function About() {
@@ -19,13 +19,13 @@ export default function About() {
         <div className="hero-radial" />
         <div className="container-fyn relative pb-12">
           <Reveal>
-            <p className="label-eyebrow text-fyn-pink mb-4 flex items-center gap-2"><MapPin size={14} /> Tlemcen, Algérie · Depuis 2026</p>
+            <p className="label-eyebrow text-fyn-pink mb-4 flex items-center gap-2"><MapPin size={14} /> Algérie · Depuis 2026</p>
             <h1 className="font-display text-fyn-text" style={{ fontSize: "clamp(2.75rem, 7vw, 5.5rem)", lineHeight: 1.05, letterSpacing: "-0.02em" }}>
               <span style={{ fontStyle: "italic", fontWeight: 300 }}>Notre</span> histoire,<br />
-              née à <span style={{ fontStyle: "italic", fontWeight: 300 }}>Tlemcen.</span>
+              née en <span style={{ fontStyle: "italic", fontWeight: 300 }}>Algérie.</span>
             </h1>
             <p className="text-fyn-muted mt-6 max-w-2xl text-lg">
-              Fyn Beauty est une jeune maison de cosmétiques fondée en 2026 au cœur de Tlemcen, berceau de l'élégance et du raffinement algériens. Notre mission : redéfinir la beauté méditerranéenne avec des produits de luxe pensés pour toutes les femmes.
+              Fyn Beauty est une jeune maison de cosmétiques fondée en 2026 en Algérie, berceau d'élégance et de raffinement. Notre mission : redéfinir la beauté méditerranéenne avec des produits de luxe pensés pour toutes les femmes.
             </p>
           </Reveal>
         </div>
@@ -39,9 +39,9 @@ export default function About() {
           </Reveal>
           <Reveal>
             <p className="label-eyebrow text-fyn-gold mb-3">Nos origines</p>
-            <h2 className="font-display text-fyn-text" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.12 }}>De la médina de Tlemcen au monde</h2>
+            <h2 className="font-display text-fyn-text" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.12 }}>De l'Algérie au monde</h2>
             <div className="space-y-4 mt-5 text-fyn-muted">
-              <p>Inspirée par la richesse de l'artisanat tlemcénien — ses broderies, ses parfums, ses couleurs — Fyn Beauty est née d'une conviction simple : les femmes algériennes méritent un maquillage de luxe conçu pour leurs carnations et leur culture.</p>
+              <p>Inspirée par la richesse de l'artisanat algérien — ses broderies, ses parfums, ses couleurs — Fyn Beauty est née d'une conviction simple : les femmes algériennes méritent un maquillage de luxe conçu pour leurs carnations et leur culture.</p>
               <p>Chaque teinte raconte une histoire : les couchers de soleil sur le Sahara, le rouge des médinas, l'or des bijoux kabyles. Nous formulons localement, en Algérie, avec des ingrédients halal et une démarche cruelty-free.</p>
               <p>En 2026, nous lançons notre première collection. Ce n'est que le début d'un voyage que nous avons hâte de partager avec vous.</p>
             </div>
@@ -96,7 +96,7 @@ export default function About() {
         <Reveal className="relative overflow-hidden rounded-[32px] bg-fyn-plum text-white px-8 sm:px-16 py-16 text-center">
           <Heart className="mx-auto text-fyn-gold mb-5" size={34} />
           <h2 className="font-display" style={{ fontSize: "clamp(2rem, 5vw, 3.25rem)", lineHeight: 1.1 }}>Rejoignez l'aventure Fyn Beauty</h2>
-          <p className="text-white/75 mt-4 text-lg">contact@fynbeauty.store · Tlemcen, Algérie</p>
+          <p className="text-white/75 mt-4 text-lg">contact@fynbeauty.store · Algérie</p>
           <Link to="/nouveautes" className="btn-fyn-primary mt-8">Voir les nouveautés</Link>
           <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full" style={{ background: "rgba(232,25,106,0.25)" }} />
           <div className="absolute -bottom-16 -left-10 w-48 h-48 rounded-full" style={{ background: "rgba(201,160,122,0.18)" }} />

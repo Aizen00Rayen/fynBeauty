@@ -41,7 +41,7 @@ export default function Footer() {
             <h4 className="label-eyebrow text-fyn-gold mb-5">Contact</h4>
             <ul className="space-y-3 text-sm text-white/75 font-body">
               <li className="flex items-center gap-2"><Mail size={15} /> contact@fynbeauty.store</li>
-              <li className="text-white/60">Tlemcen, Algérie</li>
+              <li className="text-white/60">Algérie</li>
             </ul>
           </div>
         </div>

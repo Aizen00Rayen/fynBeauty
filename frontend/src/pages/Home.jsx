@@ -80,7 +80,7 @@ export default function Home() {
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.6 }}
               className="text-fyn-muted mt-6 max-w-md" style={{ fontSize: 18 }}
             >
-              Makeup de luxe, pensé pour vous. Des teintes inspirées du désert, des médinas et de la lumière de Tlemcen.
+              Makeup de luxe, pensé pour vous. Des teintes inspirées du désert, des médinas et de la lumière d'Algérie.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.75, duration: 0.6 }}
@@ -161,10 +161,10 @@ export default function Home() {
           <Reveal>
             <p className="label-eyebrow text-fyn-pink mb-3">Notre histoire</p>
             <h2 className="font-display text-fyn-text" style={{ fontSize: "clamp(2.2rem, 4.5vw, 3.25rem)", lineHeight: 1.12 }}>
-              Née à Tlemcen,<br />pour toutes les femmes
+              Née en Algérie,<br />pour toutes les femmes
             </h2>
             <p className="text-fyn-muted mt-5 max-w-lg">
-              Fondée en 2026 à Tlemcen, Fyn Beauty célèbre la beauté méditerranéenne avec des formules halal, cruelty-free et fabriquées en Algérie. Des couleurs pensées pour nos carnations, nos rituels et notre élégance.
+              Fondée en 2026 en Algérie, Fyn Beauty célèbre la beauté méditerranéenne avec des formules halal, cruelty-free et fabriquées en Algérie. Des couleurs pensées pour nos carnations, nos rituels et notre élégance.
             </p>
             <div className="grid grid-cols-3 gap-6 mt-10">
               {[{ icon: ShieldCheck, t: "100% Halal" }, { icon: Leaf, t: "Cruelty Free" }, { icon: Sparkles, t: "Fabriqué en Algérie" }].map(({ icon: Icon, t }) => (

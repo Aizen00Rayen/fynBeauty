@@ -113,19 +113,49 @@ const FRONTEND_BUILD = FRONTEND_BUILD_CANDIDATES.find((dir) =>
   fs.existsSync(path.join(dir, "index.html"))
 );
 
+function syncToPublicHtml(sourceDir) {
+  if (!sourceDir) return null;
+  const candidates = [
+    path.resolve(__dirname, "../../../../public_html"),
+    path.resolve(__dirname, "../../../public_html"),
+    path.resolve(__dirname, "../../public_html"),
+    path.resolve(process.cwd(), "../../../../public_html"),
+    path.resolve(process.cwd(), "../../public_html"),
+  ];
+  for (const pub of candidates) {
+    if (fs.existsSync(pub) && fs.statSync(pub).isDirectory()) {
+      try {
+        console.log(`[boot] Syncing frontend build to ${pub}...`);
+        fs.cpSync(sourceDir, pub, { recursive: true, force: true });
+        console.log(`[boot] Successfully synced frontend build to ${pub}`);
+        return pub;
+      } catch (err) {
+        console.warn(`[boot] Could not sync to ${pub}:`, err.message);
+      }
+    }
+  }
+  return null;
+}
+
 app.get("/api/", (req, res) => {
   res.json({ message: "Fyn Beauty API", status: "ok" });
 });
 
-// Deployment diagnostic: shows whether the frontend build was located and
-// every path that was checked. Handy when the storefront won't serve on a
-// host — visit /api/status and read the result. Safe to remove once live.
+// Deployment diagnostic: shows located frontend files and public_html sync
 app.get("/api/status", (req, res) => {
+  const jsDir = FRONTEND_BUILD ? path.join(FRONTEND_BUILD, "static", "js") : null;
+  const cssDir = FRONTEND_BUILD ? path.join(FRONTEND_BUILD, "static", "css") : null;
+  const pubHtml = path.resolve(__dirname, "../../../../public_html");
   res.json({
     frontendBuildServedFrom: FRONTEND_BUILD || null,
     serving: FRONTEND_BUILD ? "frontend + api" : "api only",
     dirname: __dirname,
     cwd: process.cwd(),
+    filesInJs: jsDir && fs.existsSync(jsDir) ? fs.readdirSync(jsDir) : [],
+    filesInCss: cssDir && fs.existsSync(cssDir) ? fs.readdirSync(cssDir) : [],
+    publicHtmlPath: pubHtml,
+    publicHtmlExists: fs.existsSync(pubHtml),
+    filesInPublicHtml: fs.existsSync(pubHtml) ? fs.readdirSync(pubHtml).slice(0, 30) : [],
     candidates: FRONTEND_BUILD_CANDIDATES.map((dir) => ({
       dir,
       hasIndexHtml: fs.existsSync(path.join(dir, "index.html")),
@@ -143,7 +173,9 @@ app.use("/api/wilayas", wilayaRoutes);
 
 if (FRONTEND_BUILD) {
   console.log(`[boot] Serving frontend build from: ${FRONTEND_BUILD}`);
+  syncToPublicHtml(FRONTEND_BUILD);
   app.use(express.static(FRONTEND_BUILD));
+  app.use("/static", express.static(path.join(FRONTEND_BUILD, "static")));
   app.get("*", (req, res, next) => {
     if (req.path.startsWith("/api/")) return next();
     res.sendFile(path.join(FRONTEND_BUILD, "index.html"));

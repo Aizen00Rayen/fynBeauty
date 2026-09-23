@@ -146,6 +146,8 @@ app.get("/api/status", (req, res) => {
   const jsDir = FRONTEND_BUILD ? path.join(FRONTEND_BUILD, "static", "js") : null;
   const cssDir = FRONTEND_BUILD ? path.join(FRONTEND_BUILD, "static", "css") : null;
   const pubHtml = path.resolve(__dirname, "../../../../public_html");
+  const htaccessPath = path.join(pubHtml, ".htaccess");
+  const jsFilePath = path.join(pubHtml, "static", "js", "main.3b8888d9.js");
   res.json({
     frontendBuildServedFrom: FRONTEND_BUILD || null,
     serving: FRONTEND_BUILD ? "frontend + api" : "api only",
@@ -156,6 +158,9 @@ app.get("/api/status", (req, res) => {
     publicHtmlPath: pubHtml,
     publicHtmlExists: fs.existsSync(pubHtml),
     filesInPublicHtml: fs.existsSync(pubHtml) ? fs.readdirSync(pubHtml).slice(0, 30) : [],
+    htaccess: fs.existsSync(htaccessPath) ? fs.readFileSync(htaccessPath, "utf8") : null,
+    jsFileInPublicHtmlExists: fs.existsSync(jsFilePath),
+    jsFileMode: fs.existsSync(jsFilePath) ? fs.statSync(jsFilePath).mode.toString(8) : null,
     candidates: FRONTEND_BUILD_CANDIDATES.map((dir) => ({
       dir,
       hasIndexHtml: fs.existsSync(path.join(dir, "index.html")),

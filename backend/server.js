@@ -179,6 +179,7 @@ app.use("/api/wilayas", wilayaRoutes);
 if (FRONTEND_BUILD) {
   console.log(`[boot] Serving frontend build from: ${FRONTEND_BUILD}`);
   syncToPublicHtml(FRONTEND_BUILD);
+  app.use("/assets", express.static(FRONTEND_BUILD));
   app.use(express.static(FRONTEND_BUILD));
   app.use("/static", express.static(path.join(FRONTEND_BUILD, "static")));
   app.get("*", (req, res, next) => {

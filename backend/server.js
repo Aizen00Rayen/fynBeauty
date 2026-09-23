@@ -141,30 +141,57 @@ app.get("/api/", (req, res) => {
   res.json({ message: "Fyn Beauty API", status: "ok" });
 });
 
-// Deployment diagnostic: shows located frontend files and public_html sync
+function findSqliteFiles(startDir, maxDepth = 5, currentDepth = 0) {
+  const results = [];
+  if (currentDepth > maxDepth || !fs.existsSync(startDir)) return results;
+  try {
+    const entries = fs.readdirSync(startDir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(startDir, entry.name);
+      if (entry.isFile() && (entry.name.endsWith(".sqlite") || entry.name.endsWith(".db"))) {
+        try {
+          const stat = fs.statSync(fullPath);
+          results.push({ path: fullPath, size: stat.size, mtime: stat.mtime });
+        } catch {}
+      } else if (entry.isDirectory() && entry.name !== "node_modules" && entry.name !== ".git") {
+        results.push(...findSqliteFiles(fullPath, maxDepth, currentDepth + 1));
+      }
+    }
+  } catch {}
+  return results;
+}
+
+// Deployment diagnostic: shows located frontend files, public_html sync, and sqlite discovery
 app.get("/api/status", (req, res) => {
-  const jsDir = FRONTEND_BUILD ? path.join(FRONTEND_BUILD, "static", "js") : null;
-  const cssDir = FRONTEND_BUILD ? path.join(FRONTEND_BUILD, "static", "css") : null;
-  const pubHtml = path.resolve(__dirname, "../../../../public_html");
-  const htaccessPath = path.join(pubHtml, ".htaccess");
-  const jsFilePath = path.join(pubHtml, "static", "js", "main.3b8888d9.js");
+  const hbuildsVersionsDir = path.resolve(__dirname, "../../"); // .../hbuilds/versions
+  let versions = [];
+  try {
+    if (fs.existsSync(hbuildsVersionsDir)) {
+      versions = fs.readdirSync(hbuildsVersionsDir).map((v) => {
+        const vDir = path.join(hbuildsVersionsDir, v);
+        const sqliteFile = path.join(vDir, "nodejs", "data", "fynbeauty.sqlite");
+        const uploadsDir = path.join(vDir, "nodejs", "uploads");
+        return {
+          version: v,
+          hasSqlite: fs.existsSync(sqliteFile),
+          sqliteSize: fs.existsSync(sqliteFile) ? fs.statSync(sqliteFile).size : 0,
+          sqliteMtime: fs.existsSync(sqliteFile) ? fs.statSync(sqliteFile).mtime : null,
+          uploadsCount: fs.existsSync(uploadsDir) ? fs.readdirSync(uploadsDir).length : 0,
+        };
+      });
+    }
+  } catch {}
+
+  const domainRoot = path.resolve(__dirname, "../../../..");
+  const allSqlite = findSqliteFiles(domainRoot, 6);
+
   res.json({
-    frontendBuildServedFrom: FRONTEND_BUILD || null,
-    serving: FRONTEND_BUILD ? "frontend + api" : "api only",
-    dirname: __dirname,
-    cwd: process.cwd(),
-    filesInJs: jsDir && fs.existsSync(jsDir) ? fs.readdirSync(jsDir) : [],
-    filesInCss: cssDir && fs.existsSync(cssDir) ? fs.readdirSync(cssDir) : [],
-    publicHtmlPath: pubHtml,
-    publicHtmlExists: fs.existsSync(pubHtml),
-    filesInPublicHtml: fs.existsSync(pubHtml) ? fs.readdirSync(pubHtml).slice(0, 30) : [],
-    htaccess: fs.existsSync(htaccessPath) ? fs.readFileSync(htaccessPath, "utf8") : null,
-    jsFileInPublicHtmlExists: fs.existsSync(jsFilePath),
-    jsFileMode: fs.existsSync(jsFilePath) ? fs.statSync(jsFilePath).mode.toString(8) : null,
-    candidates: FRONTEND_BUILD_CANDIDATES.map((dir) => ({
-      dir,
-      hasIndexHtml: fs.existsSync(path.join(dir, "index.html")),
-    })),
+    currentDbPath: process.env.DB_PATH || path.join(__dirname, "data", "fynbeauty.sqlite"),
+    currentDbSize: fs.existsSync(process.env.DB_PATH || path.join(__dirname, "data", "fynbeauty.sqlite"))
+      ? fs.statSync(process.env.DB_PATH || path.join(__dirname, "data", "fynbeauty.sqlite")).size
+      : 0,
+    hbuildsVersions: versions,
+    foundSqliteFiles: allSqlite,
   });
 });
 

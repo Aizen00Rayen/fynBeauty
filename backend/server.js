@@ -186,10 +186,10 @@ app.get("/api/status", (req, res) => {
   const allSqlite = findSqliteFiles(domainRoot, 6);
 
   res.json({
-    currentDbPath: process.env.DB_PATH || path.join(__dirname, "data", "fynbeauty.sqlite"),
-    currentDbSize: fs.existsSync(process.env.DB_PATH || path.join(__dirname, "data", "fynbeauty.sqlite"))
-      ? fs.statSync(process.env.DB_PATH || path.join(__dirname, "data", "fynbeauty.sqlite")).size
-      : 0,
+    currentDbPath: DB_PATH,
+    currentDbSize: fs.existsSync(DB_PATH) ? fs.statSync(DB_PATH).size : 0,
+    currentUploadsDir: UPLOAD_DIR,
+    uploadsCount: fs.existsSync(UPLOAD_DIR) ? fs.readdirSync(UPLOAD_DIR).length : 0,
     hbuildsVersions: versions,
     foundSqliteFiles: allSqlite,
   });

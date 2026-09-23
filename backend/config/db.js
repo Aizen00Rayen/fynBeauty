@@ -2,8 +2,58 @@ const path = require("path");
 const fs = require("fs");
 const Database = require("better-sqlite3");
 
-const DB_PATH = process.env.DB_PATH || path.join(__dirname, "..", "data", "fynbeauty.sqlite");
+function resolveDbPath() {
+  if (process.env.DB_PATH) return process.env.DB_PATH;
+
+  const candidates = [
+    path.resolve(__dirname, "../../../../nodejs/data/fynbeauty.sqlite"),
+    path.resolve(process.cwd(), "../../../../nodejs/data/fynbeauty.sqlite"),
+    "/home/u640326644/domains/fynbeauty.shop/nodejs/data/fynbeauty.sqlite",
+    path.resolve(__dirname, "..", "data", "fynbeauty.sqlite"),
+  ];
+
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      try {
+        const stat = fs.statSync(candidate);
+        if (stat.size > 4096) {
+          console.log(`[db] Using existing persistent database: ${candidate} (${stat.size} bytes)`);
+          return candidate;
+        }
+      } catch {}
+    }
+  }
+
+  return path.join(__dirname, "..", "data", "fynbeauty.sqlite");
+}
+
+function resolveUploadsDir() {
+  if (process.env.UPLOADS_DIR) return process.env.UPLOADS_DIR;
+
+  const candidates = [
+    path.resolve(__dirname, "../../../../nodejs/uploads"),
+    path.resolve(process.cwd(), "../../../../nodejs/uploads"),
+    "/home/u640326644/domains/fynbeauty.shop/nodejs/uploads",
+    path.join(__dirname, "..", "uploads"),
+  ];
+
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+
+  return path.join(__dirname, "..", "uploads");
+}
+
+const DB_PATH = resolveDbPath();
+const UPLOAD_DIR = resolveUploadsDir();
+
 fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
+console.log(`[db] Connected to database: ${DB_PATH} (${fs.existsSync(DB_PATH) ? fs.statSync(DB_PATH).size : 0} bytes)`);
+console.log(`[db] Uploads directory: ${UPLOAD_DIR}`);
 
 const db = new Database(DB_PATH);
 db.pragma("journal_mode = WAL");
@@ -62,4 +112,4 @@ const pool = {
   },
 };
 
-module.exports = { pool, db };
+module.exports = { pool, db, DB_PATH, UPLOAD_DIR, resolveUploadsDir, resolveDbPath };

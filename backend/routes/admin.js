@@ -4,7 +4,7 @@ const fs = require("fs");
 const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
 
-const { pool } = require("../config/db");
+const { pool, UPLOAD_DIR } = require("../config/db");
 const { requireAdmin } = require("../middleware/auth");
 const { HttpError, asyncHandler } = require("../utils/http");
 const { slugify, nowIso, escapeLike } = require("../utils/helpers");
@@ -15,7 +15,6 @@ const router = express.Router();
 // Every route in this module requires an admin.
 router.use(requireAdmin);
 
-const UPLOAD_DIR = path.join(__dirname, "..", "uploads");
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 const ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp", "image/jpg"];

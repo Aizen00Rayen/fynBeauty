@@ -10,6 +10,7 @@ const rateLimit = require("express-rate-limit");
 
 const { initSchema } = require("./config/schema");
 const { seedData } = require("./seed");
+const { UPLOAD_DIR, DB_PATH } = require("./config/db");
 const { HttpError } = require("./utils/http");
 
 const authRoutes = require("./routes/auth");
@@ -90,7 +91,6 @@ app.use(
 );
 
 // Static uploads (served under /api so a single ingress can route to the backend).
-const UPLOAD_DIR = path.join(__dirname, "uploads");
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 app.use("/api/uploads", express.static(UPLOAD_DIR));
 
